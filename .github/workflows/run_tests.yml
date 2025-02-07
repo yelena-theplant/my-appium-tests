@@ -1,0 +1,36 @@
+name: Run Appium Tests  # 工作流的名称
+
+on: [push]  # 触发条件：当代码被推送到仓库时触发
+
+jobs:
+  test:  # 定义一个名为 "test" 的任务
+    runs-on: macos-latest  # 使用 macOS 环境（Appium 需要 macOS 或 Linux）
+
+    steps:
+      # 第一步：拉取代码
+      - name: Checkout code
+        uses: actions/checkout@v2  # 使用 GitHub 官方的 checkout 操作
+
+      # 第二步：设置 Python 环境
+      - name: Set up Python
+        uses: actions/setup-python@v2  # 使用 GitHub 官方的 setup-python 操作
+        with:
+          python-version: 3.7  # 指定 Python 版本
+
+      # 第三步：安装依赖
+      - name: Install dependencies
+        run: |
+          pip3 install -r requirements.txt  # 安装 Python 依赖
+          npm install -g appium  # 安装 Appium
+          appium -v  # 检查 Appium 是否安装成功
+
+      # 第四步：启动 Appium 服务器
+      - name: Start Appium Server
+        run: |
+          appium &  # 在后台启动 Appium 服务器
+          sleep 10  # 等待 Appium 启动完成
+
+      # 第五步：运行测试
+      - name: Run tests
+        run: |
+          python run_tests.py  # 运行你的测试脚本
